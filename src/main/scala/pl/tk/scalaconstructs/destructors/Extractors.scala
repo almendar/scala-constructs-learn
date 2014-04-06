@@ -36,6 +36,55 @@ object GiveNameAndSurname {
   }
 }
 
+object Email {
+  def apply(user:String, domain:String) = user+"@"+domain
+
+  def unapply(address:String) : Option[(String,String)] = {
+    address.split("@") match {
+      case Array(user,domain) => Some((user,domain))
+      case _ => None
+    }
+  }
+
+
+}
+
+object IsPolishDomain {
+  def unapply(str:String) = str.contains(".pl")
+}
+
+object Domain {
+
+// The injection method (optional)
+  def apply(parts: String*): String = parts.reverse.mkString(".")
+
+// The extraction method (mandatory)
+  def unapplySeq(whole: String): Option[Seq[String]] = Some(whole.split("\\.").reverse)
+}
+
+
+
+object Foo {
+  def main(args:Array[String]) : Unit = {
+
+    val properEmail = "tmkk@o2.pl"
+
+
+    properEmail match {
+      case user Email domain => println("Yes it is")
+      case _ => println("No it's not")
+    }
+    val Email(user,domain @ IsPolishDomain()) = "tmkk@o2.pl"
+    println(user,domain)
+    val emails = List(properEmail,"zazs@sd.pl","notanemail","amercian@america.com") filter {case Email(_,_) => true; case _ => false} foreach {println}
+
+  val Domain(country, rest @ _*) = "pl.com.wp.finanse" 
+  println(rest.last)
+  }
+
+
+}
+
 
 
 case class Fraction(a: Int, b: Int)
