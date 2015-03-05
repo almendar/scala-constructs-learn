@@ -32,7 +32,7 @@ object GiveNameAndSurname {
   def unapplySeq(name: String): Option[(String, String, Seq[String])] = {
     val names = name.trim.split(" ")
     if (names.size < 2) None
-    else Some((names.last, names.head, names.drop(1).dropRight(1)))
+    else Some((names.last, names.head, names.drop(1).dropRight(1).toSeq))
   }
 }
 
@@ -76,7 +76,7 @@ object Foo {
     }
     val Email(user,domain @ IsPolishDomain()) = "tmkk@o2.pl"
     println(user,domain)
-    val emails = List(properEmail,"zazs@sd.pl","notanemail","amercian@america.com") filter {case Email(_,_) => true; case _ => false} foreach {println}
+    val emails = List(properEmail,"zazs@sd.pl","notanemail","amercian@america.com") filter {case Email(_,_) => true; case _ => false} foreach println
 
   val Domain(country, rest @ _*) = "pl.com.wp.finanse" 
   println(rest.last)
@@ -91,9 +91,7 @@ case class Fraction(a: Int, b: Int)
 
 object URLExtractor {
   def unapply(str: String): Boolean = {
-    Try {
-      new URL(str)
-    } match {
+    Try {new URL(str)} match {
       case Success(v) => true
       case Failure(t) => false
     }
@@ -108,7 +106,7 @@ object DoublePrecisionNumberPartsExtractor {
    */
   def unapply(d: AnyVal): Option[(Int, Int)] = {
     d.toString.split('.').toList match {
-      case a :: b :: Nil => {
+      case a :: b :: Nil =>
         val parseA = Try {
           a.toInt
         }
@@ -120,7 +118,7 @@ object DoublePrecisionNumberPartsExtractor {
                bVal <- parseB}
           yield Some((aVal, bVal))
         unpacked.getOrElse(None)
-      }
+
       case a :: Nil =>
         Try {
           a.toInt
@@ -139,7 +137,7 @@ object DoublePrecisionNumberPartsExtractor {
     /**
      * Extractor used in assigment
      */
-    val DoublePrecisionNumberPartsExtractor(a, b) = -2.4;
+    val DoublePrecisionNumberPartsExtractor(a, b) = -2.4
 
     val Fraction(l) = "2/3"
     /**
@@ -163,7 +161,7 @@ object DoublePrecisionNumberPartsExtractor {
 
 
   val res = "http://www.wp.pl" match {
-    case p @ URLExtractor => true
+    case URLExtractor() => true
     case _ => false
   }
   println(s"Is URL?: $res")
